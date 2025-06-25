@@ -26,6 +26,7 @@ struct App {
     mode: AppMode,
     input_buffer: String,
     next_id: usize,
+    temp_task_title: String, // Temporary storage for task title during creation
 }
 
 #[derive(Debug, PartialEq)]
@@ -45,6 +46,7 @@ impl App {
             mode: AppMode::Normal,
             input_buffer: String::new(),
             next_id: 1,
+            temp_task_title: String::new(),
         };
         app.load_tasks();
         app
@@ -242,14 +244,18 @@ fn draw_ui(app: &App) -> std::io::Result<()> {
             let task_text = format!("{} {} {}", status_symbol, task.id, task.title);
             execute!(stdout(), Print(task_text))?;
             
-            if !task.description.is_empty() {
-                execute!(stdout(), SetForegroundColor(Color::DarkGrey))?;
-                execute!(stdout(), Print(format!(" - {}", task.description)))?;
-            }
-            
             execute!(stdout(), SetBackgroundColor(Color::Reset))?;
             execute!(stdout(), ResetColor)?;
             current_line += 1;
+            
+            // Display description on a separate line if it exists
+            if !task.description.is_empty() {
+                execute!(stdout(), cursor::MoveTo(2, current_line))?; // Indent description
+                execute!(stdout(), SetForegroundColor(Color::DarkGrey))?;
+                execute!(stdout(), Print(format!("└─ {}", task.description)))?;
+                execute!(stdout(), ResetColor)?;
+                current_line += 1;
+            }
         }
     }
 
@@ -306,27 +312,27 @@ fn handle_input(app: &mut App) -> std::io::Result<bool> {
                     KeyCode::Esc => {
                         app.mode = AppMode::Normal;
                         app.input_buffer.clear();
+                        app.temp_task_title.clear(); // Clear temp data when canceling
                     }
                     KeyCode::Enter => {
                         let input = app.input_buffer.trim().to_string();
-                        if !input.is_empty() {
+                        if !input.is_empty() || app.mode == AppMode::AddDescription {
                             match app.mode {
                                 AppMode::AddTask => {
-                                    app.mode = AppMode::AddDescription;
-                                    // Store the title temporarily
-                                    let title = app.input_buffer.clone();
+                                    // Store the title and move to description mode
+                                    app.temp_task_title = app.input_buffer.clone();
                                     app.input_buffer.clear();
-                                    // We'll need to store this title somewhere temporary
-                                    // For now, let's add the task with empty description
-                                    app.add_task(title, String::new());
-                                    app.mode = AppMode::Normal;
+                                    app.mode = AppMode::AddDescription;
                                 }
                                 AppMode::EditTask => {
                                     app.edit_current_task(input);
                                     app.mode = AppMode::Normal;
                                 }
                                 AppMode::AddDescription => {
-                                    // This case won't happen with current flow
+                                    // Create the task with title and description
+                                    let description = app.input_buffer.clone();
+                                    app.add_task(app.temp_task_title.clone(), description);
+                                    app.temp_task_title.clear();
                                     app.mode = AppMode::Normal;
                                 }
                                 AppMode::EditDescription => {
@@ -400,7 +406,7 @@ fn main() -> std::io::Result<()> {
             .unwrap_or_default();
         
         app.add_task(task_title.clone(), description);
-        println!("✅ Task added: {}", task_title);
+        println!("Task added: {}", task_title);
         return Ok(());
     }
 
@@ -408,15 +414,10 @@ fn main() -> std::io::Result<()> {
         if app.tasks.is_empty() {
             println!("No tasks found.");
         } else {
-            println!("📋 Your tasks:");
+            println!("Your tasks:");
             for task in &app.tasks {
-                let status = if task.completed { "✅" } else { "⬜" };
-                let desc = if task.description.is_empty() {
-                    String::new()
-                } else {
-                    format!(" - {}", task.description)
-                };
-                println!("{} [{}] {}{}", status, task.id, task.title, desc);
+                let status = if task.completed { "[X]" } else { "[ ]" };
+                println!("{} [{}] {}", status, task.id, task.title);
             }
         }
         return Ok(());
