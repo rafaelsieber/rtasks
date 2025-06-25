@@ -77,10 +77,10 @@ You can also add tasks directly from the command line without entering the inter
 
 ```bash
 # Add a simple task
-./target/release/rtasks -a "Fazer almoço"
+./target/release/rtasks -a "Make lunch"
 
 # Add a task with description
-./target/release/rtasks -a "Comprar mantimentos" -d "Leite, pão, ovos e frutas"
+./target/release/rtasks -a "Buy groceries" -d "Milk, bread, eggs and fruits"
 
 # List all tasks
 ./target/release/rtasks -l
