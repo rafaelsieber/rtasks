@@ -5,7 +5,7 @@
 
 A simple, efficient terminal-based task management application written in Rust with a vim-like interface.
 
-![RTasks Demo](https://via.placeholder.com/600x400/1e1e1e/ffffff?text=RTasks+Screenshot)
+![RTasks Demo](img/screenshot.jpg)
 
 ## Features
 

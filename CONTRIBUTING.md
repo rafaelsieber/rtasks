@@ -16,7 +16,7 @@ Thank you for your interest in contributing to RTasks! This document provides gu
 1. Make sure you have Rust installed (https://rustup.rs/)
 2. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/rtasks.git
+   git clone https://github.com/rafaelsieber/rtasks.git
    cd rtasks
    ```
 3. Build the project:
