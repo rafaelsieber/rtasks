@@ -37,7 +37,7 @@ A simple, efficient terminal-based task management application written in Rust w
 1. Make sure you have Rust installed on your system ([Install Rust](https://rustup.rs/))
 2. Clone this repository:
    ```bash
-   git clone https://github.com/yourusername/rtasks.git
+   git clone https://github.com/rafaelsieber/rtasks.git
    cd rtasks
    ```
 3. Build and install:
@@ -58,7 +58,7 @@ A simple, efficient terminal-based task management application written in Rust w
 
 ### Pre-built Binaries
 
-Check the [Releases](https://github.com/yourusername/rtasks/releases) page for pre-built binaries for your platform.
+Check the [Releases](https://github.com/rafaelsieber/rtasks/releases) page for pre-built binaries for your platform.
 
 ## Usage
 
